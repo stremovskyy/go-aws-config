@@ -5,7 +5,7 @@
 ### Installation
 
 ```bash
-go get github.com/awslabs/go-config
+go get github.com/karmadon/go-aws-config
 ```
 
 ### Usage
