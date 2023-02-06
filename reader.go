@@ -44,7 +44,7 @@ func (c *client) Prepare() error {
 
 	if c.options.CredentialsInEnv {
 		awsCfg.Credentials = credentials.NewEnvCredentials()
-	} else {
+	} else if c.options.AccessKeyID != "" && c.options.SecretAccessKey != "" {
 		awsCfg.Credentials = credentials.NewStaticCredentials(c.options.AccessKeyID, c.options.SecretAccessKey, c.options.Token)
 	}
 
