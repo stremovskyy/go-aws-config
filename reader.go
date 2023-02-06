@@ -8,6 +8,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/appconfigdata"
 	"gopkg.in/yaml.v2"
+	"io"
+	"strings"
 )
 
 type client struct {
@@ -114,4 +116,13 @@ func (c *client) LoadIntoJson(dest interface{}) error {
 	}
 
 	return nil
+}
+
+func (c *client) Reader() (io.Reader, error) {
+	config, err := c.LoadConfigBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	return strings.NewReader(string(config)), nil
 }
