@@ -2,6 +2,16 @@
 
 **go-aws-config** is a very simple wrapper around the AWS SDK for Go. It provides a simple way to get configuration values from AWS App Config.
 
+### Jump to
+
+* [Installation](#Installation)
+* [Usage](#Usage)
+* [License](#License)
+* [Contributing](#Contributing)
+* [Authors](#Authors)
+* [Acknowledgments](#Acknowledgments)
+* [TODO](#TODO)
+
 ### Installation
 
 ```bash
