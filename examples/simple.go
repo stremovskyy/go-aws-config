@@ -1,8 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/karmadon/go-aws-config"
+	"github.com/stremovskyy/go-aws-config"
 )
 
 type Configuration struct {
@@ -23,10 +24,14 @@ func main() {
 	}
 
 	// Create new client
-	configurator := go_aws_config.NewClient(opts)
+	configurator, err := go_aws_config.NewClient(opts)
+	if err != nil {
+		fmt.Printf("failed to create new client, %v", err)
+		return
+	}
 
 	// Prepare client
-	err := configurator.Prepare()
+	err = configurator.Prepare(context.Background())
 	if err != nil {
 		fmt.Printf("failed to prepare client, %v", err)
 		return

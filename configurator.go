@@ -1,9 +1,12 @@
 package go_aws_config
 
-import "io"
+import (
+	"context"
+	"io"
+)
 
 type AWSConfigurator interface {
-	Prepare() error
+	Prepare(ctx context.Context) error
 	LoadConfigBytes() ([]byte, error)
 	LoadIntoYaml(dest interface{}) error
 	LoadIntoJson(dest interface{}) error

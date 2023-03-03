@@ -1,5 +1,7 @@
 # GO AWS Config
 
+[![GoDoc](https://godoc.org/github.com/stremovskyy/go_aws_config?status.svg)](https://godoc.org/github.com/stremovskyy/go_aws_config)
+
 **go-aws-config** is a very simple wrapper around the AWS SDK for Go. It provides a simple way to get configuration values from AWS App Config.
 
 ### Jump to
@@ -15,7 +17,7 @@
 ### Installation
 
 ```bash
-go get github.com/karmadon/go-aws-config
+go get github.com/stremovskyy/go-aws-config
 ```
 
 ### Usage
@@ -26,7 +28,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/karmadon/go-aws-config"
+	"github.com/stremovskyy/go-aws-config"
 )
 
 type Configuration struct {
@@ -77,7 +79,7 @@ package main
 
 import (
     "fmt"
-    "github.com/karmadon/go-aws-config"
+    "github.com/stremovskyy/go-aws-config"
 )
 
 type Configuration struct {
@@ -141,7 +143,7 @@ Please make sure to update tests as appropriate.
 
 ### Authors
 
-* **Karmadon** - *Initial work* - [Karmadon](https://github.com/karmadon)
+* **Anton Stremovskyy** - *Initial work* - [stremovskyy](https://github.com/stremovskyy)
 
 ### Acknowledgments
 

@@ -1,7 +1,9 @@
 package go_aws_config
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -12,6 +14,12 @@ import (
 	"strings"
 )
 
+const (
+	defaultRegion           = "eu-central-1"
+	defaultPollingInterval  = 60
+	defaultCredentialsInEnv = true
+)
+
 type client struct {
 	options       *Options
 	appConfigData *appconfigdata.AppConfigData
@@ -19,29 +27,31 @@ type client struct {
 }
 
 // NewClient creates a new AWSConfigurator
-func NewClient(options *Options) AWSConfigurator {
+func NewClient(options *Options) (AWSConfigurator, error) {
 	if options == nil {
 		options = &Options{
-			Region:           "eu-central-1",
-			ApplicationID:    "test",
-			EnvironmentID:    "TestEnvironment",
-			Profile:          "test-config",
-			PollingInterval:  60,
-			CredentialsInEnv: true,
+			CredentialsInEnv: defaultCredentialsInEnv,
 		}
 	}
 
+	// Set default values for missing options
 	if options.Region == "" {
-		options.Region = "eu-central-1"
+		options.Region = defaultRegion
+	}
+	if options.PollingInterval == 0 {
+		options.PollingInterval = defaultPollingInterval
+	}
+	if options.CredentialsInEnv == false && (options.AccessKeyID == "" || options.SecretAccessKey == "") {
+		return nil, errors.New("access key ID and secret access key are required")
 	}
 
-	return &client{options: options}
+	return &client{options: options}, nil
 }
 
-// Prepare prepares the client to load the configuration
-func (c *client) Prepare() error {
+// Prepare prepares the client to load the configuration from AWS AppConfig
+func (c *client) Prepare(ctx context.Context) error {
 	awsCfg := &aws.Config{
-		Region: aws.String("eu-central-1"),
+		Region: aws.String(c.options.Region),
 	}
 
 	if c.options.CredentialsInEnv {
@@ -50,12 +60,12 @@ func (c *client) Prepare() error {
 		awsCfg.Credentials = credentials.NewStaticCredentials(c.options.AccessKeyID, c.options.SecretAccessKey, c.options.Token)
 	}
 
-	ses, err := session.NewSession(awsCfg)
+	sess, err := session.NewSession(awsCfg)
 	if err != nil {
 		return fmt.Errorf("failed to create AWS session, %v", err)
 	}
 
-	c.appConfigData = appconfigdata.New(ses)
+	c.appConfigData = appconfigdata.New(sess)
 
 	sessInp := appconfigdata.StartConfigurationSessionInput{
 		ApplicationIdentifier:                aws.String(c.options.ApplicationID),
@@ -64,11 +74,13 @@ func (c *client) Prepare() error {
 		RequiredMinimumPollIntervalInSeconds: aws.Int64(c.options.PollingInterval),
 	}
 
-	configSession, err := c.appConfigData.StartConfigurationSession(&sessInp)
+	// Start the configuration session
+	configSession, err := c.appConfigData.StartConfigurationSessionWithContext(ctx, &sessInp)
 	if err != nil {
-		return fmt.Errorf("failed to start AWS appconfig session, %v", err)
+		return fmt.Errorf("failed to start AWS AppConfig session, %v", err)
 	}
 
+	// Set the configuration token on the client
 	c.configToken = configSession.InitialConfigurationToken
 
 	return nil
