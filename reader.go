@@ -3,7 +3,6 @@ package go_aws_config
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -40,9 +39,6 @@ func NewClient(options *Options) (AWSConfigurator, error) {
 	}
 	if options.PollingInterval == 0 {
 		options.PollingInterval = defaultPollingInterval
-	}
-	if options.CredentialsInEnv == false && (options.AccessKeyID == "" || options.SecretAccessKey == "") {
-		return nil, errors.New("access key ID and secret access key are required")
 	}
 
 	return &client{options: options}, nil
